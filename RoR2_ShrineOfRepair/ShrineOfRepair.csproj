@@ -22,9 +22,11 @@
   <ItemGroup>
     <Reference Include="BubbetsItems">
       <HintPath>libs\BubbetsItems.dll</HintPath>
+	  <Private>false</Private>
     </Reference>
 	<Reference Include="RiskOfOptions">
 		<HintPath>libs\RiskOfOptions.dll</HintPath>
+		<Private>false</Private>
 	</Reference>
   </ItemGroup>
 
@@ -43,5 +45,9 @@
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy /Y /E &quot;$(TargetDir)&quot; &quot;C:\Users\Cass\AppData\Roaming\r2modmanPlus-local\RiskOfRain2\profiles\Modding\BepInEx\plugins\ShrineOfStabilization&quot;&#xD;&#xA;&quot;C:\Program Files (x86)\Steam\steamapps\common\Risk of Rain 2\Risk of Rain 2.exe&quot; --doorstop-enabled true --doorstop-target-assembly &quot;C:\Users\Cass\AppData\Roaming\r2modmanPlus-local\RiskOfRain2\profiles\Modding\BepInEx\core\BepInEx.Preloader.dll&quot;" />
+  </Target>
 
 </Project>
