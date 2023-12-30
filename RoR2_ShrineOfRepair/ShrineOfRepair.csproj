@@ -28,6 +28,10 @@
 		<HintPath>libs\RiskOfOptions.dll</HintPath>
 		<Private>false</Private>
 	</Reference>
+	<Reference Include="VoidItemAPI">
+	  <HintPath>libs\VoidItemAPI.dll</HintPath>
+	  <Private>false</Private>
+	</Reference>
   </ItemGroup>
 
   <ItemGroup>

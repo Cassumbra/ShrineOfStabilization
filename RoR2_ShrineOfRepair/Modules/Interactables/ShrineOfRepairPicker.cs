@@ -128,11 +128,11 @@ namespace ShrineOfRepair.Modules.Interactables
                     {
                         bool isShrineAvailable = false;
 
-                        FillRepairItemsDictionary();
-                        foreach (KeyValuePair<ItemIndex, ItemIndex> pairedItems in RepairItemsDictionary)
+                        FillStabilizeItemsDictionary();
+                        foreach (KeyValuePair<ItemIndex, ItemIndex> pairedItems in StabilizeItemsDictionary)
                             if (body.inventory.GetItemCount(pairedItems.Key) > 0)
                                 isShrineAvailable = true;
-                        foreach (KeyValuePair<EquipmentIndex, EquipmentIndex> pairedItems in RepairEquipmentsDictionary)
+                        foreach (KeyValuePair<EquipmentIndex, EquipmentIndex> pairedItems in StabilizeEquipmentsDictionary)
                             if (body.equipmentSlot.equipmentIndex == pairedItems.Key)
                                 isShrineAvailable = true;
                         if (!isShrineAvailable) { return Interactability.ConditionsNotMet; }
@@ -175,12 +175,12 @@ namespace ShrineOfRepair.Modules.Interactables
                         CharacterMaster master = interactor ? interactor.GetComponent<CharacterBody>().master : LocalUserManager.GetFirstLocalUser().cachedMasterController.master;
 
                         PickupDef pickupDef = PickupCatalog.GetPickupDef(self.pickerController.options[index].pickupIndex);
-                        FillRepairItemsDictionary();
-                        bool isItem = RepairItemsDictionary.TryGetValue(pickupDef.itemIndex, out var itemIndex);
+                        FillStabilizeItemsDictionary();
+                        bool isItem = StabilizeItemsDictionary.TryGetValue(pickupDef.itemIndex, out var itemIndex);
                         int count = master.inventory.GetItemCount(pickupDef.itemIndex);
                         ItemTier tier = ItemCatalog.GetItemDef(itemIndex).tier;
 
-                        if (isItem || RepairEquipmentsDictionary.ContainsKey(pickupDef.equipmentIndex))
+                        if (isItem || StabilizeEquipmentsDictionary.ContainsKey(pickupDef.equipmentIndex))
                         {
                             MyLogger.LogMessage(string.Format("Price for {0}x{1} is {2}", pickupDef.nameToken, count, isItem ? GetTotalStackCost(tier, count) : GetEquipmentCost()));
 
@@ -258,14 +258,14 @@ namespace ShrineOfRepair.Modules.Interactables
                     PickupDef pickupDef = PickupCatalog.GetPickupDef(new PickupIndex(selection));
                     CharacterBody body = interactor.GetComponent<CharacterBody>();
                     int numberOfItems = body.inventory.GetItemCount(pickupDef.itemIndex);
-                    FillRepairItemsDictionary();
+                    FillStabilizeItemsDictionary();
 
                     // since broken items by default don't have tier
                     // we use our dictionary to get itemTier of non-broken item
-                    bool isItem = RepairItemsDictionary.TryGetValue(pickupDef.itemIndex, out var itemIndex);
+                    bool isItem = StabilizeItemsDictionary.TryGetValue(pickupDef.itemIndex, out var itemIndex);
                     ItemTier tier = ItemCatalog.GetItemDef(itemIndex).tier;
 
-                    if (isItem || RepairEquipmentsDictionary.ContainsKey(pickupDef.equipmentIndex))
+                    if (isItem || StabilizeEquipmentsDictionary.ContainsKey(pickupDef.equipmentIndex))
                     {
                         uint cost = isItem ? GetTotalStackCost(tier, numberOfItems) : GetEquipmentCost();
                         if (cost > (useLunarCoins ? body.master.playerCharacterMasterController.networkUser.lunarCoins : body.master.money))
@@ -287,8 +287,8 @@ namespace ShrineOfRepair.Modules.Interactables
                         }
                         else
                         {
-                            body.inventory.SetEquipmentIndex(RepairEquipmentsDictionary[pickupDef.equipmentIndex]);
-                            CharacterMasterNotificationQueue.PushEquipmentTransformNotification(body.master, pickupDef.equipmentIndex, RepairEquipmentsDictionary[pickupDef.equipmentIndex], CharacterMasterNotificationQueue.TransformationType.Default);
+                            body.inventory.SetEquipmentIndex(StabilizeEquipmentsDictionary[pickupDef.equipmentIndex]);
+                            CharacterMasterNotificationQueue.PushEquipmentTransformNotification(body.master, pickupDef.equipmentIndex, StabilizeEquipmentsDictionary[pickupDef.equipmentIndex], CharacterMasterNotificationQueue.TransformationType.Default);
 
                             pickupColorHex = ColorCatalog.GetColorHexString(EquipmentCatalog.GetEquipmentDef(pickupDef.equipmentIndex).colorIndex);
                             pickupName = Language.GetString(EquipmentCatalog.GetEquipmentDef(pickupDef.equipmentIndex).nameToken);
@@ -345,8 +345,8 @@ namespace ShrineOfRepair.Modules.Interactables
                 {
                     var currentCurrency = useLunarCoins ? charBody.master.playerCharacterMasterController.networkUser.lunarCoins : charBody.master.money;
 
-                    FillRepairItemsDictionary();
-                    foreach (KeyValuePair<ItemIndex, ItemIndex> pairedItems in RepairItemsDictionary)
+                    FillStabilizeItemsDictionary();
+                    foreach (KeyValuePair<ItemIndex, ItemIndex> pairedItems in StabilizeItemsDictionary)
                     {
                         var itemCount = charBody.inventory.GetItemCount(pairedItems.Key);
                         if (itemCount > 0)
@@ -358,7 +358,7 @@ namespace ShrineOfRepair.Modules.Interactables
                             });
                         }
                     }
-                    if (RepairEquipmentsDictionary.ContainsKey(charBody.equipmentSlot.equipmentIndex))
+                    if (StabilizeEquipmentsDictionary.ContainsKey(charBody.equipmentSlot.equipmentIndex))
                     {
                         options.Add(new PickupPickerController.Option
                         {

@@ -1,5 +1,7 @@
-﻿using R2API;
+﻿using Newtonsoft.Json.Linq;
+using R2API;
 using RoR2;
+using RoR2.Items;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -14,17 +16,28 @@ namespace ShrineOfRepair.Modules.Interactables
 
         internal abstract GameObject CreateInteractable(GameObject InteractableModel);
 
-        public static Dictionary<ItemIndex, ItemIndex> RepairItemsDictionary = new Dictionary<ItemIndex, ItemIndex>();
 
-        public static Dictionary<EquipmentIndex, EquipmentIndex> RepairEquipmentsDictionary = new Dictionary<EquipmentIndex, EquipmentIndex>();
+        public static Dictionary<ItemIndex, ItemIndex> StabilizeItemsDictionary = new Dictionary<ItemIndex, ItemIndex>();
+
+        public static Dictionary<EquipmentIndex, EquipmentIndex> StabilizeEquipmentsDictionary = new Dictionary<EquipmentIndex, EquipmentIndex>();
 
         public static InteractableSpawnCard shrineSpawnCard;
 
-        public static void FillRepairItemsDictionary()
+        public static void FillStabilizeItemsDictionary()
         {
-            if (RepairItemsDictionary.Count != 0 || RepairEquipmentsDictionary.Count != 0) return;
+            if (StabilizeItemsDictionary.Count != 0 || StabilizeEquipmentsDictionary.Count != 0) return;
+
+            HG.ReadOnlyArray<ItemDef.Pair> voidPairs = ItemCatalog.GetItemPairsForRelationship(DLC1Content.ItemRelationshipTypes.ContagiousItem);
+
+            foreach (var pair in voidPairs)
+            {
+                ItemIndex voidItem = pair.itemDef2.itemIndex;
+                ItemIndex regItem = pair.itemDef1.itemIndex;
+                StabilizeItemsDictionary.Add(voidItem, regItem);
+            }
 
             // ItemIndex enums are index numbers from "Item & Equipment IDs and Names" page
+            /*
             var itemIds = RepairList.Value.Split(',');
             foreach (var itemId in itemIds)
             {
@@ -35,23 +48,24 @@ namespace ShrineOfRepair.Modules.Interactables
                     ItemIndex tofix = ItemCatalog.FindItemIndex(kv[1].Trim());
                     if (broken != ItemIndex.None && tofix != ItemIndex.None)
                     {
-                        RepairItemsDictionary.Add(broken, tofix);
+                        StabilizeItemsDictionary.Add(broken, tofix);
                         continue;
                     }
                     EquipmentIndex broken2 = EquipmentCatalog.FindEquipmentIndex(kv[0].Trim());
                     EquipmentIndex tofix2 = EquipmentCatalog.FindEquipmentIndex(kv[1].Trim());
                     if (broken2 != EquipmentIndex.None && tofix2 != EquipmentIndex.None)
-                        RepairEquipmentsDictionary.Add(broken2, tofix2);
+                        StabilizeEquipmentsDictionary.Add(broken2, tofix2);
                 }
             }
+            */
 
-            RepairItemsDictionary = ModExtension.FillItemDictionaryFromMods(RepairItemsDictionary);
-            RepairItemsDictionary = ModExtension.FillDictionaryFromMods(RepairItemsDictionary);
-            RepairEquipmentsDictionary = ModExtension.FillEquipmentDictionaryFromMods(RepairEquipmentsDictionary);
+            StabilizeItemsDictionary = ModExtension.FillItemDictionaryFromMods(StabilizeItemsDictionary);
+            StabilizeItemsDictionary = ModExtension.FillDictionaryFromMods(StabilizeItemsDictionary);
+            StabilizeEquipmentsDictionary = ModExtension.FillEquipmentDictionaryFromMods(StabilizeEquipmentsDictionary);
             ShrineOfRepairPlugin.MyLogger.LogDebug("Items");
-            foreach (var kv in RepairItemsDictionary) ShrineOfRepairPlugin.MyLogger.LogDebug(ItemCatalog.GetItemDef(kv.Key).name + " -> " + ItemCatalog.GetItemDef(kv.Value).name);
+            foreach (var kv in StabilizeItemsDictionary) ShrineOfRepairPlugin.MyLogger.LogDebug(ItemCatalog.GetItemDef(kv.Key).name + " -> " + ItemCatalog.GetItemDef(kv.Value).name);
             ShrineOfRepairPlugin.MyLogger.LogDebug("Equipments");
-            foreach (var kv in RepairEquipmentsDictionary) ShrineOfRepairPlugin.MyLogger.LogDebug(EquipmentCatalog.GetEquipmentDef(kv.Key).name + " -> " + EquipmentCatalog.GetEquipmentDef(kv.Value).name);
+            foreach (var kv in StabilizeEquipmentsDictionary) ShrineOfRepairPlugin.MyLogger.LogDebug(EquipmentCatalog.GetEquipmentDef(kv.Key).name + " -> " + EquipmentCatalog.GetEquipmentDef(kv.Value).name);
         }
 
         internal void CreateInteractables()

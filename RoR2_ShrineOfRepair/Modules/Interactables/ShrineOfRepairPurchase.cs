@@ -148,15 +148,15 @@ namespace ShrineOfRepair.Modules.Interactables
                     {
                         bool isShrineAvailable = false;
 
-                        FillRepairItemsDictionary();
-                        foreach (KeyValuePair<ItemIndex, ItemIndex> pairedItems in RepairItemsDictionary)
+                        FillStabilizeItemsDictionary();
+                        foreach (KeyValuePair<ItemIndex, ItemIndex> pairedItems in StabilizeItemsDictionary)
                         {
                             if (body.inventory.GetItemCount(pairedItems.Key) > 0)
                             {
                                 isShrineAvailable = true;
                             }
                         }
-                        if (RepairEquipmentsDictionary.ContainsKey(body.equipmentSlot.equipmentIndex)) isShrineAvailable = true;
+                        if (StabilizeEquipmentsDictionary.ContainsKey(body.equipmentSlot.equipmentIndex)) isShrineAvailable = true;
                         if (!isShrineAvailable) { return Interactability.ConditionsNotMet; }
                     }
                 }
@@ -226,8 +226,8 @@ namespace ShrineOfRepair.Modules.Interactables
                 if (body && body.master)
                 {
                     var inventory = body.inventory;
-                    FillRepairItemsDictionary();
-                    foreach (KeyValuePair<ItemIndex, ItemIndex> pairedItems in RepairItemsDictionary)
+                    FillStabilizeItemsDictionary();
+                    foreach (KeyValuePair<ItemIndex, ItemIndex> pairedItems in StabilizeItemsDictionary)
                     {
                         int numberOfItems = inventory.GetItemCount(pairedItems.Key);
                         if (numberOfItems > 0)
@@ -237,10 +237,10 @@ namespace ShrineOfRepair.Modules.Interactables
                             CharacterMasterNotificationQueue.SendTransformNotification(body.master, pairedItems.Key, pairedItems.Value, CharacterMasterNotificationQueue.TransformationType.Default);
                         }
                     }
-                    if (RepairEquipmentsDictionary.ContainsKey(body.equipmentSlot.equipmentIndex))
+                    if (StabilizeEquipmentsDictionary.ContainsKey(body.equipmentSlot.equipmentIndex))
                     {
-                        inventory.SetEquipmentIndex(RepairEquipmentsDictionary[body.equipmentSlot.equipmentIndex]);
-                        CharacterMasterNotificationQueue.PushEquipmentTransformNotification(body.master, body.equipmentSlot.equipmentIndex, RepairEquipmentsDictionary[body.equipmentSlot.equipmentIndex], CharacterMasterNotificationQueue.TransformationType.Default);
+                        inventory.SetEquipmentIndex(StabilizeEquipmentsDictionary[body.equipmentSlot.equipmentIndex]);
+                        CharacterMasterNotificationQueue.PushEquipmentTransformNotification(body.master, body.equipmentSlot.equipmentIndex, StabilizeEquipmentsDictionary[body.equipmentSlot.equipmentIndex], CharacterMasterNotificationQueue.TransformationType.Default);
                     }
 
                     EffectManager.SpawnEffect(Resources.Load<GameObject>("Prefabs/Effects/ShrineUseEffect"), new EffectData()
